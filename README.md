@@ -415,10 +415,10 @@ Calibration note: absolute PSNR/FID values depend on noise, hole size, and regis
 
 ## 12. Hardware, reproducibility, references, licence
 
-**Hardware:** A mid-range **GPU with ≥8 GB** VRAM is comfortable for 256² training; reduce `batch_size` in YAML if you run out of memory.
+**Hardware:** A mid-range **GPU with ≥4 GB** VRAM is comfortable for 256² training; reduce `batch_size` in YAML if you run out of memory.
 
 **Reproducibility:** `seed` in `configs/default.yaml` is applied via `utils/seeds.set_seed` at the start of training scripts.
 
 **References (context):** Wiley *Journal of Microscopy* microstructure inpainting line of work; public GitHub projects such as `tldr-group/microstructure-inpainter` and `ustb-ai3d/automatic_inpainting` informed **design choices only**—this codebase is not a line-for-line port.
 
-**Licence:** Use for academic / thesis work; add your institution’s licence if you redistribute.
+**Licence:** Use for academic / thesis work
