@@ -1,5 +1,7 @@
 # Deep Learning–Based Automatic Inpainting for Material Microscopic Images
 
+Based on github.com/hellodeepuu/Microstructure_inpaintaing (licence: academic/thesis use). Modified by Nirmay Nandurkar: U-Net loader fix, damage generation, scoring and texture-baseline scripts.
+
 This repository is a **research-style PyTorch project** for restoring material micrographs: it finds damaged regions, builds masks, inpaints with a GAN, optionally trains a **spatial generator with G-opt**, optionally refines results with **z-opt**, and reports image and microstructure metrics.
 
 The code is **original and modular** (not a copy-paste of a single upstream repo). It is suitable for a BTP or thesis workflow: train models, save checkpoints, run inference, and evaluate numerically.
