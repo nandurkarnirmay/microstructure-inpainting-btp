@@ -1,13 +1,16 @@
-"""One-minute check, BEFORE retraining: do the training images and masks line up?
+r"""One-minute check, BEFORE retraining: do the training images and masks line up?
 
   python check_align.py
+  python check_align.py --images data\unet_voronoi_images --masks data\unet_voronoi_masks
 
-Loads samples exactly as train_unet.py does (same config, augmentation on),
-once through the old loader and once through the fixed one. Damage is painted
+Loads samples exactly as train_unet.py does (same config, augmentation on)
+through the loader train_unet.py imports (add --compare_original to also run
+datasets/microscopy_original.py, the pre-fix loader, if you still have it). Damage is painted
 flat, so inside a correctly placed mask the image has almost no texture.
   ratio = std(image inside mask) / std(image outside mask)
 Aligned  -> ratio near 0.   Misaligned -> ratio near 1 (mask sits on real texture).
 """
+import argparse
 import sys
 from pathlib import Path
 
@@ -20,12 +23,10 @@ import torch
 from preprocessing.pipeline import MicroscopyPreprocessor, PreprocessConfig, build_train_transforms
 from utils.config import load_config
 
-IMAGES = ROOT / "data" / "unet_images"
-MASKS = ROOT / "data" / "unet_masks"
 N = 200
 
 
-def run(module_name):
+def run(module_name, IMAGES, MASKS):
     mod = __import__(f"datasets.{module_name}", fromlist=["MicroscopyFolderDataset"])
     cfg = load_config(str(ROOT / "configs" / "default.yaml"))
     p = cfg.get("preprocessing", {})
@@ -58,5 +59,12 @@ def run(module_name):
 
 
 if __name__ == "__main__":
-    run("microscopy_original")   # the buggy loader, kept as a backup
-    run("microscopy")            # what train_unet.py imports
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--images", default=str(ROOT / "data" / "unet_images"))
+    ap.add_argument("--masks", default=str(ROOT / "data" / "unet_masks"))
+    ap.add_argument("--compare_original", action="store_true",
+                    help="also run datasets/microscopy_original.py (the pre-fix loader), if present")
+    a = ap.parse_args()
+    if a.compare_original:
+        run("microscopy_original", Path(a.images), Path(a.masks))
+    run("microscopy", Path(a.images), Path(a.masks))   # what train_unet.py imports
