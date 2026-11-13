@@ -62,8 +62,20 @@ class MicroscopyFolderDataset(Dataset):
         if mask is None:
             mask = torch.zeros_like(img[:1])
         if self.transform:
-            img = self.transform(img)
-            mask = self.transform(mask)
+            # Transform image and mask AS ONE TENSOR.
+            #
+            # Calling self.transform twice draws fresh random numbers each
+            # time, so the image and its mask were being flipped and rotated
+            # independently -- the mask no longer described the image, and
+            # roughly seven of every eight training samples carried a target
+            # that did not match their input. Only damage that happens to be
+            # symmetric under flips and rotations (a centred square, say)
+            # survived that, which is why centred test cases scored well
+            # while off-centre damage did not.
+            c = img.shape[0]
+            both = torch.cat([img, mask], dim=0)
+            both = self.transform(both)
+            img, mask = both[:c], both[c:]
         return {"image": img, "mask": mask, "path": str(p)}
 
 
