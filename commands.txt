@@ -1,0 +1,26 @@
+Generate Voronoi/Spinodal images :-
+python gen_micro.py --out data\voronoi_train_images --n 3000 --kind voronoi --seed 21
+
+python gen_micro.py --out data\test_demo --n 5 --kind spinodal --seed 4242
+dir data\test_demo
+Pipeline-1:-
+Damage:-
+python damage.py --image data\test\spinodal_00009.png --out_dir data\test_demo --mode center --hole 80
+Impainting: without U-Net for masking-
+python inpaint.py --ckpt checkpoints\gan\gan_weights.pt --image data\test_demo\spinodal_00009_damaged.png --mask data\test\spinodal_00009_mask.png --out outputs\demo_spinodal\final.png
+Evals:-
+python evaluate.py --pred outputs\demo_spinodal\final.png --gt data\test\spinodal_00009.png --out_json outputs\demo_spinodal\metrics.json
+
+Pipeline-2
+For U-Net Architecture :-
+Damage entire training batch for training U-Net Architecture :-
+python damage_batch.py --clean_dir data\train_images --out_images data\unet_images --out_masks data\unet_masks --n 2000 --fill 128 --seed 7
+
+Training the U-Net :-
+python train_unet.py --images data\unet_images --masks data\unet_masks --config configs\default.yaml
+
+Now damage an image for testing purposes:-
+python damage.py --image data\test_demo\spinodal_00009.png --out_dir data\test_demo --mode center --hole 80 --fill 128
+
+Run the pipeline through infer:-
+python infer.py --image data\test_demo\spinodal_00009_damaged.png --unet_ckpt checkpoints\unet\unet_best.pt --gan_ckpt checkpoints\gan\gan_weights.pt --out_dir outputs\unet_demo
