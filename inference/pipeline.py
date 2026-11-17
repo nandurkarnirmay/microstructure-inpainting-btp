@@ -94,7 +94,8 @@ class InpaintPipeline:
         masked = image * (1.0 - hole)
         with torch.no_grad():
             out = G(masked, hole)
-        return self._blend(out, image, hole, border=int(self.cfg.get("gopt", {}).get("annulus_width", 8)))
+        grown = torch.nn.functional.max_pool2d(hole, kernel_size=5, stride=1, padding=2)
+        return self._blend(out, image, grown, border=0)
 
     def inpaint_spatial_gopt(
         self,
