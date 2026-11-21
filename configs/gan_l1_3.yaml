@@ -1,0 +1,89 @@
+seed: 42
+device: cuda
+
+paths:
+  data_root: data
+  checkpoints: checkpoints
+  outputs: outputs
+  logs: outputs/logs
+
+preprocessing:
+  image_size: 256
+  grayscale: true
+  normalize: minmax
+  clahe_clip: 2.0
+  clahe_grid: 8
+  denoise_h: 0
+  patch_size: 128
+  patch_stride: 64
+  augment: true
+
+blending:
+  mode: feather
+  feather_kernel: 9
+  feather_sigma: 2.2
+
+evaluation:
+  s2_max_r: 64
+  phase_threshold: 0.5
+
+unet:
+  in_channels: 1
+  base_channels: 32
+  num_levels: 4
+  batch_size: 4
+  epochs: 60
+  lr: 0.0001
+  weight_decay: 0.00001
+
+gan:
+  in_channels: 2
+  out_channels: 1
+  z_channels: 1
+  base_channels: 48
+  hole_min: 32
+  hole_max: 112
+  batch_size: 4
+  epochs: 120
+  lr_g: 0.00008
+  lr_d: 0.00008
+  beta1: 0.5
+  lambda_l1: 3.0
+  lambda_l1_bg: 0.1
+  n_critic: 1
+  gp_weight: 8.0
+  grad_clip: 1.0
+
+gopt:
+  hole_size: 64
+  annulus_width: 8
+  content_weight: 2.4
+  interior_content_weight: 0.22
+  content_every: 5
+  epochs: 120
+  lr_g: 0.00006
+  lr_d: 0.00006
+  gp_weight: 8.0
+  scale_factor: 8
+  grad_clip: 1.0
+
+zopt:
+  steps: 900
+  lr: 0.018
+  kl_weight: 0.038
+  use_kl: true
+  kl_diag_weight: 0.58
+  interior_weight: 0.48
+  grad_clip: 3.0
+  lr_min_ratio: 0.06
+  renormalize_every: 0
+  log_every: 60
+
+cyclic:
+  max_rounds: 3
+  defect_threshold: 0.12
+
+mask:
+  binarize_threshold: 0.5
+  morph_kernel: 3
+  min_component_area: 32
